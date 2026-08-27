@@ -1,597 +1,396 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Embodied Insight | Physics-Aware Predictive Diagnostics for Robotics</title>
-    <style>
-        :root {
-            --primary: #0a0e14; /* Deep Black/Blue */
-            --secondary: #151b23; 
-            --accent: #2dd4bf; /* Teal */
-            --accent-dim: #0f766e;
-            --text: #e2e8f0;
-            --text-muted: #94a3b8;
-            --bg: #0a0e14;
-            --code-bg: #11161e;
-            --border: #1e293b;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kinetiq Labs — Predictive Diagnostics for Physical AI</title>
+<meta name="description" content="Physics-aware observability and causal diagnostics for robotic systems.">
+<style>
+:root{
+  --bg:#07090d;
+  --panel:#0c1017;
+  --panel2:#10151d;
+  --line:#202833;
+  --text:#f2f5f8;
+  --muted:#a8b3c0; /* Lightened for better contrast */
+  --accent:#38bdf8; /* Sky Blue */
+  --accent-dim:rgba(56, 189, 248, 0.2);
+  --danger:#ff6b6b;
+  --max:1180px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.55;
+}
+/* Background Grid */
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.28;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:56px 56px;
+  mask-image:linear-gradient(to bottom,black,transparent 75%);
+}
+a{color:inherit;text-decoration:none}
+.container{width:min(var(--max),calc(100% - 40px));margin:auto}
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:20;
+  background:rgba(7,9,13,.72);backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(255,255,255,.07)
+}
+.nav{height:72px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:750;letter-spacing:-.04em;font-size:17px}
+.logo span{color:var(--accent)}
+.links{display:flex;gap:30px;color:var(--muted);font-size:14px}
+.links a:hover{color:var(--text)}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;padding:11px 17px;border-radius:8px;
+  border:1px solid var(--line);font-size:14px;font-weight:650;
+}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#080b06}
+.btn.primary:hover{filter:brightness(1.1);box-shadow:0 0 20px var(--accent-dim)}
+.btn.secondary:hover{border-color:#45505d}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+/* --- Hero --- */
+.hero{padding:140px 0 90px;position:relative}
+.hero:after{
+  content:"";position:absolute;width:650px;height:650px;right:-250px;top:-180px;
+  background:radial-gradient(circle,rgba(56, 189, 248,.12),transparent 65%);pointer-events:none
+}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;color:var(--accent);
+  border:1px solid var(--accent-dim);background:rgba(56, 189, 248,.05);
+  padding:6px 10px;border-radius:999px;font:600 12px ui-monospace,SFMono-Regular,Menlo,monospace;
+  text-transform:uppercase;letter-spacing:.08em
+}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+h1{
+  max-width:900px;font-size:clamp(42px,6.5vw,76px);line-height:1.0;
+  letter-spacing:-.065em;margin:24px 0 26px;font-weight:780
+}
+h1 em{font-style:normal;color:var(--muted)}
+.hero-copy{max-width:680px;color:#b3bdc8;font-size:18px;line-height:1.65}
+.hero-actions{display:flex;gap:12px;margin-top:30px}
 
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            scroll-behavior: smooth;
-            line-height: 1.6;
-        }
+.hero-grid{
+  display:grid;grid-template-columns:1.2fr 0.8fr;gap:50px;align-items:center;margin-top:70px
+}
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-        }
+/* --- Pipeline Box (Left) --- */
+.pipeline-box {
+  background: linear-gradient(145deg,#0d1219,#090c11);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 36px;
+  font-family: ui-monospace, monospace;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start; /* Left aligned */
+  text-align: left; /* Left aligned */
+}
+.pipeline-step { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.pipeline-tag { color: var(--accent); font-size: 18px; font-weight: 700; letter-spacing: -0.01em; } /* Increased font size */
+.pipeline-desc { color: var(--muted); font-size: 15px; font-family: Inter, sans-serif; } /* Increased font size */
+.pipeline-arrow { 
+  color: #5e6a78; 
+  font-size: 20px; 
+  line-height: 1; 
+  margin: 0 0 0 4px; /* Indent slightly to align with text */
+}
 
-        /* --- Navbar --- */
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background-color: rgba(10, 14, 20, 0.8);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            border-bottom: 1px solid var(--border);
-        }
+/* --- UI Mockup Card (Right) --- */
+.system-card{
+  border:1px solid var(--line);background:linear-gradient(145deg,#0d1219,#090c11);
+  border-radius:14px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.35);
+  width: 100%; 
+}
+.card-top{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;color:#8d99a6;font:12px ui-monospace,monospace}
+.signal{padding:24px}
+.signal svg{width:100%;height:180px;display:block}
+.trace{margin-top:14px;display:grid;grid-template-columns:90px 1fr;gap:10px;font:12px ui-monospace,monospace}
+.trace .t{color:#7a8694} 
+.trace .v{color:#c4cdd6} 
+.trace .alert{color:var(--danger)}
 
-        .nav-container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 1rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+/* --- Sections --- */
+section{padding:105px 0;border-top:1px solid rgba(255,255,255,.07);position:relative;overflow:hidden}
+.section-head{max-width:760px;margin-bottom:45px;position:relative;z-index:2}
+.kicker{color:var(--accent);font:600 12px ui-monospace,monospace;text-transform:uppercase;letter-spacing:.1em}
+h2{font-size:clamp(32px,4.2vw,50px);line-height:1.04;letter-spacing:-.055em;margin:13px 0 18px;font-weight:750}
+.lead{color:var(--muted);font-size:17px;max-width:680px}
 
-        .logo {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            letter-spacing: -0.5px;
-        }
+/* --- Analytics Background Graph --- */
+.bg-graph {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.1; 
+  z-index: 1;
+}
 
-        .logo span {
-            color: var(--accent);
-        }
+.problem{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;position:relative;z-index:2}
+.tile{padding:25px;border:1px solid var(--line);background:var(--panel);border-radius:12px}
+.tile .num{font:12px ui-monospace,monospace;color:#7a8694} 
+.tile h3{margin:30px 0 9px;font-size:18px;letter-spacing:-.02em}
+.tile p{color:var(--muted);font-size:14px}
 
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-            font-size: 0.9rem;
-        }
+.pipeline{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);border-radius:14px;overflow:hidden;position:relative;z-index:2}
+.step{min-height:205px;padding:22px;background:var(--panel);border-right:1px solid var(--line);position:relative}
+.step:last-child{border-right:0}
+.step:after{content:"→";position:absolute;right:10px;top:20px;color:#46515f}
+.step:last-child:after{display:none}
+.step .n{color:#7a8694;font:12px ui-monospace,monospace} 
+.step h3{margin:42px 0 9px;font-size:16px}
+.step p{font-size:13px;color:var(--muted)}
 
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-muted);
-            transition: color 0.3s;
-        }
+.graph-layout{display:grid;grid-template-columns:.85fr 1.15fr;gap:22px;position:relative;z-index:2}
+.explain-box,.graph{border:1px solid var(--line);background:var(--panel);border-radius:14px}
+.explain-box{padding:30px}
+.explain-box h3{font-size:23px;letter-spacing:-.035em;margin-bottom:13px}
+.explain-box p{color:var(--muted);font-size:15px}
+.chain{margin-top:28px;display:flex;flex-direction:column;gap:8px}
+.node{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);font:13px ui-monospace,monospace}
+.node small{color:#8b96a5} 
+.node.fault{border-color:rgba(255,107,107,.35);color:#ff9898}
+.arrow{text-align:center;color:#7a8694;font:13px ui-monospace,monospace} 
+.graph{padding:22px;min-height:390px;position:relative;overflow:hidden}
+.graph .label{font:12px ui-monospace,monospace;color:#8d99a6} 
+.graph svg{width:100%;height:330px;margin-top:15px}
 
-        .nav-links a:hover {
-            color: var(--text);
-        }
+.arch{display:grid;grid-template-columns:1fr 1fr;gap:14px;position:relative;z-index:2}
+.arch .tile{min-height:150px}
 
-        .btn-primary {
-            background-color: var(--accent);
-            color: var(--primary);
-            padding: 0.6rem 1.2rem;
-            border-radius: 4px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: none;
-            cursor: pointer;
-        }
+.cta{padding:75px 0 110px;text-align:center}
+.cta-box{border:1px solid var(--accent-dim);background:radial-gradient(circle at 50% 0,rgba(56, 189, 248,.08),transparent 55%),var(--panel);border-radius:16px;padding:70px 30px}
+.cta h2{max-width:720px;margin:12px auto 18px}
+.cta p{max-width:600px;margin:auto;color:var(--muted)}
+.cta .btn{margin-top:28px}
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(45, 212, 191, 0.3);
-        }
+footer{border-top:1px solid var(--line);padding:28px 0;color:#7a8694;font-size:12px} 
+.footer-flex{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
 
-        /* --- Hero --- */
-        .hero {
-            padding: 10rem 0 6rem;
-            border-bottom: 1px solid var(--border);
-            background: radial-gradient(circle at 50% 0%, rgba(45, 212, 191, 0.05) 0%, transparent 60%);
-        }
-
-        .hero h1 {
-            font-size: 2.8rem;
-            line-height: 1.2;
-            margin-bottom: 1.5rem;
-            letter-spacing: -1px;
-            background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero p {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            max-width: 650px;
-            margin-bottom: 3rem;
-        }
-
-        .hero .highlight {
-            color: var(--text);
-            font-weight: 500;
-        }
-
-        /* --- Pipeline Flow --- */
-        .pipeline-box {
-            background: var(--code-bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 2rem;
-            margin-top: 2rem;
-            font-family: 'JetBrains Mono', 'Courier New', monospace;
-            font-size: 0.9rem;
-            overflow-x: auto;
-        }
-
-        .pipeline-step {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .pipeline-arrow {
-            color: var(--accent);
-            margin: 0 0.5rem;
-        }
-
-        .pipeline-tag {
-            background: rgba(45, 212, 191, 0.1);
-            color: var(--accent);
-            border: 1px solid var(--accent-dim);
-            padding: 0.3rem 0.8rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        /* --- Sections --- */
-        section {
-            padding: 6rem 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        h2 {
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-            letter-spacing: -0.5px;
-        }
-
-        h3 {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-            color: var(--text);
-        }
-
-        p {
-            color: var(--text-muted);
-            margin-bottom: 1.5rem;
-        }
-
-        /* --- Cross Domain Chain --- */
-        .chain-container {
-            background: var(--code-bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 2rem;
-            margin: 2rem 0;
-            font-family: 'JetBrains Mono', 'Courier New', monospace;
-        }
-
-        .chain-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1rem;
-            font-size: 0.95rem;
-        }
-
-        .chain-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .chain-node {
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--border);
-            background: var(--secondary);
-            border-radius: 4px;
-            color: var(--text);
-            flex-grow: 1;
-            text-align: center;
-        }
-
-        .chain-node.fault {
-            border-color: #f87171;
-            color: #f87171;
-            background: rgba(248, 113, 113, 0.1);
-        }
-
-        .chain-arrow {
-            color: var(--text-muted);
-            margin: 0 0.5rem;
-            font-size: 1.2rem;
-        }
-
-        /* --- How It Works --- */
-        .step-list {
-            list-style: none;
-            counter-reset: step-counter;
-        }
-
-        .step-list li {
-            position: relative;
-            padding-left: 3rem;
-            margin-bottom: 2.5rem;
-        }
-
-        .step-list li::before {
-            counter-increment: step-counter;
-            content: counter(step-counter);
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 2rem;
-            height: 2rem;
-            background: transparent;
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-
-        .step-list strong {
-            color: var(--text);
-            font-weight: 600;
-        }
-
-        /* --- Customization Grid --- */
-        .custom-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .custom-card {
-            background: var(--code-bg);
-            border: 1px solid var(--border);
-            padding: 1.5rem;
-            border-radius: 8px;
-        }
-
-        .custom-card h4 {
-            color: var(--accent);
-            margin-bottom: 0.5rem;
-            font-size: 1rem;
-        }
-
-        .custom-card p {
-            font-size: 0.9rem;
-            margin-bottom: 0;
-        }
-
-        /* --- Explainability Timeline --- */
-        .timeline-box {
-            background: var(--code-bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 2rem;
-            margin-top: 2rem;
-        }
-
-        .timeline-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1rem;
-            font-family: 'JetBrains Mono', 'Courier New', monospace;
-            font-size: 0.9rem;
-        }
-
-        .timeline-time {
-            color: var(--text-muted);
-            width: 80px;
-        }
-
-        .timeline-event {
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            flex-grow: 1;
-        }
-
-        .event-ok { background: rgba(45, 212, 191, 0.1); color: var(--accent); border: 1px solid var(--accent-dim); }
-        .event-warn { background: rgba(251, 191, 36, 0.1); color: #fbbf24; border: 1px solid #b45309; }
-        .event-fail { background: rgba(248, 113, 113, 0.1); color: #f87171; border: 1px solid #b91c1c; }
-
-        /* --- Validation --- */
-        .validation-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .validation-card {
-            background: var(--code-bg);
-            border: 1px solid var(--border);
-            padding: 1.5rem;
-            border-radius: 8px;
-        }
-
-        .validation-card h4 {
-            color: var(--accent);
-            margin-bottom: 0.5rem;
-            font-size: 1rem;
-        }
-
-        .validation-card ul {
-            list-style: none;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        .validation-card li {
-            margin-bottom: 0.5rem;
-            padding-left: 1rem;
-            position: relative;
-        }
-
-        .validation-card li::before {
-            content: ">";
-            position: absolute;
-            left: 0;
-            color: var(--accent);
-        }
-
-        /* --- CTA --- */
-        .cta-section {
-            text-align: center;
-            background: radial-gradient(circle at 50% 50%, rgba(45, 212, 191, 0.05) 0%, transparent 70%);
-        }
-
-        .cta-box {
-            border: 1px solid var(--accent);
-            background: rgba(45, 212, 191, 0.05);
-            padding: 3rem;
-            border-radius: 8px;
-            margin-top: 2rem;
-        }
-
-        /* --- Footer --- */
-        footer {
-            padding: 3rem 0;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            border-top: 1px solid var(--border);
-            background-color: var(--bg);
-        }
-
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2rem; }
-            .pipeline-step { flex-direction: column; align-items: flex-start; }
-            .pipeline-arrow { transform: rotate(90deg); margin: 0.5rem 0; }
-            .custom-grid, .validation-grid { grid-template-columns: 1fr; }
-            .chain-row { flex-direction: column; gap: 0.5rem; }
-            .chain-arrow { transform: rotate(90deg); margin: 0.5rem 0; }
-        }
-    </style>
+@media(max-width:850px){
+  .links{display:none}
+  .hero-grid,.graph-layout{grid-template-columns:1fr}
+  .problem{grid-template-columns:1fr}
+  .pipeline{grid-template-columns:1fr}
+  .step{min-height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .step:last-child{border-bottom:0}
+  .step:after{content:"↓";right:20px;top:22px}
+  .step:last-child:after{display:none}
+  .arch{grid-template-columns:1fr}
+  .hero{padding-top:110px}
+}
+</style>
 </head>
 <body>
 
-    <!-- Navbar -->
-    <nav>
-        <div class="nav-container">
-            <a href="#" class="logo">Embodied<span>Insight</span></a>
-            <ul class="nav-links">
-                <li><a href="#physics">Physics</a></li>
-                <li><a href="#customization">Customization</a></li>
-                <li><a href="#explainability">Explainability</a></li>
-            </ul>
-            <a href="#contact" class="btn-primary">Design Partners</a>
+<nav>
+  <div class="container nav">
+    <a class="logo" href="#">Kinetiq<span> Labs</span></a>
+    <div class="links">
+      <a href="#platform">Platform</a>
+      <a href="#reasoning">Reasoning</a>
+      <a href="#architecture">Architecture</a>
+    </div>
+    <a class="btn primary" href="#contact">Talk to us →</a>
+  </div>
+</nav>
+
+<main>
+<section class="hero">
+  <div class="container">
+    <div class="eyebrow"><span class="dot"></span> Intelligence for physical systems</div>
+    <h1>Predict failures.<br>Explain causes.<br><em>Keep robots running.</em></h1>
+    <p class="hero-copy">
+      Kinetiq Labs is the intelligence layer for physical AI — detecting degradation early and tracing abnormal behavior back to its physical cause before your line goes down.
+    </p>
+    <div class="hero-actions">
+      <a class="btn primary" href="#contact">Explore the platform →</a>
+      <a class="btn secondary" href="#reasoning">See how it works</a>
+    </div>
+
+    <div class="hero-grid">
+      <!-- Left: Pipeline Flow -->
+      <div class="pipeline-box">
+        <div class="pipeline-step">
+          <div class="pipeline-tag">1. Live Telemetry</div>
+          <div class="pipeline-desc">Continuous Behavior Monitoring</div>
         </div>
-    </nav>
-
-    <!-- Hero -->
-    <header class="hero">
-        <div class="container">
-            <h1>Stop Robot Failures Before They Happen.</h1>
-            <p>
-                <span class="highlight">Predictive causal diagnostics for robotic systems.</span> 
-                Embodied Insight monitors robot behavior to detect degradation the moment it begins, instantly explaining the physical root cause before your line goes down.
-            </p>
-
-            <div class="pipeline-box">
-                <div class="pipeline-step">
-                    <div class="pipeline-tag">1. Live Telemetry</div>
-                    <span class="pipeline-arrow">↓</span>
-                    <div>Continuous Behavior Monitoring</div>
-                </div>
-                <div class="pipeline-step">
-                    <div class="pipeline-tag">2. Early Detection</div>
-                    <span class="pipeline-arrow">↓</span>
-                    <div>Anomaly Onset Identified (CUSUM)</div>
-                </div>
-                <div class="pipeline-step">
-                    <div class="pipeline-tag">3. Causal Graph</div>
-                    <span class="pipeline-arrow">↓</span>
-                    <div>Physical Topology & Rule Mapping</div>
-                </div>
-                <div class="pipeline-step">
-                    <div class="pipeline-tag">4. Propagation</div>
-                    <span class="pipeline-arrow">↓</span>
-                    <div>Temporally Consistent Beam Search</div>
-                </div>
-                <div class="pipeline-step">
-                    <div class="pipeline-tag">5. Proactive Output</div>
-                    <span class="pipeline-arrow">↓</span>
-                    <div>Ranked Root Causes (Before Task Failure)</div>
-                </div>
-            </div>
+        <div class="pipeline-step">
+          <div class="pipeline-tag">2. Early Detection</div>
+          <div class="pipeline-desc">Anomaly Onset Identified</div>
         </div>
-    </header>
-
-    <!-- Physics-Awareness -->
-    <section id="physics">
-        <div class="container">
-            <h2>Cross-Domain Causal Reasoning</h2>
-            <p>The strongest differentiator of Embodied Insight is its deep physics-awareness. A fault in an electrical component doesn't just trigger an alarm; it propagates mechanically, thermally, and kinematically until a task fails. We map these dependencies as a strict structural graph.</p>
-            
-            <div class="chain-container">
-                <div class="chain-row">
-                    <div class="chain-node fault">Electrical Fault<br><span style="font-size:0.7rem; opacity:0.7;">(e.g., Motor Winding Resistance)</span></div>
-                    <div class="chain-arrow">→</div>
-                    <div class="chain-node">Actuator Response<br><span style="font-size:0.7rem; opacity:0.7;">(Current Draw Increases)</span></div>
-                    <div class="chain-arrow">→</div>
-                    <div class="chain-node">Mechanical Stress<br><span style="font-size:0.7rem; opacity:0.7;">(Torque Load)</span></div>
-                </div>
-                <div style="text-align: center; color: var(--text-muted); margin: 1rem 0;">↓</div>
-                <div class="chain-row">
-                    <div class="chain-node">Thermal Effect<br><span style="font-size:0.7rem; opacity:0.7;">(Joule Heating)</span></div>
-                    <div class="chain-arrow">→</div>
-                    <div class="chain-node">Kinematic Drift<br><span style="font-size:0.7rem; opacity:0.7;">(Thermal Expansion)</span></div>
-                    <div class="chain-arrow">→</div>
-                    <div class="chain-node fault">Task Failure<br><span style="font-size:0.7rem; opacity:0.7;">(TCP Position Error)</span></div>
-                </div>
-            </div>
-            
-            <p>By applying fundamental physics laws (friction, conduction, kinematics) directly to the robot's topology, Embodied Insight ensures that telemetry data is only ever allowed to adjust confidence on already-plausible physical edges—never to invent impossible connections.</p>
+        <div class="pipeline-step">
+          <div class="pipeline-tag">3. Causal Graph</div>
+          <div class="pipeline-desc">Physical Topology & Rule Mapping</div>
         </div>
-    </section>
-
-    <!-- Customization -->
-    <section id="customization">
-        <div class="container">
-            <h2>Adapts to Any Robot Architecture</h2>
-            <p>Embodied Insight is built as a generic pipeline. It doesn't rely on brittle, robot-specific rules. Instead, it ingests standard structural models and physical parameters to automatically configure its diagnostic logic.</p>
-            
-            <div class="custom-grid">
-                <div class="custom-card">
-                    <h4>URDF Topology Parsing</h4>
-                    <p>Upload your standard URDF. The engine maps the kinematic chain, thermal masses, and electrical connections. No manual modeling or hardcoded logic required.</p>
-                </div>
-                <div class="custom-card">
-                    <h4>Pluggable Telemetry</h4>
-                    <p>Supports CSV ingestion out of the box. Easily extendable to ROS topics or OPC-UA endpoints via standard Python interfaces.</p>
-                </div>
-                <div class="custom-card">
-                    <h4>Physical Parameter Injection</h4>
-                    <p>Define custom motor constants (Kt), gear ratios, and thermal coefficients. The physics rules dynamically scale their confidence based on your specific hardware.</p>
-                </div>
-                <div class="custom-card">
-                    <h4>Automated Graph Generation</h4>
-                    <p>Once the topology and parameters are loaded, the system automatically generates the candidate causal edges (e.g., Friction → Heat → Expansion) for every joint.</p>
-                </div>
-            </div>
+        <div class="pipeline-step">
+          <div class="pipeline-tag">4. Propagation</div>
+          <div class="pipeline-desc">Temporally Consistent Beam Search</div>
         </div>
-    </section>
-
-    <!-- Explainability -->
-    <section id="explainability">
-        <div class="container">
-            <h2>Zero Black Boxes. Temporal Consistency.</h2>
-            <p>Black-box AI might flag an anomaly, but it can't tell you why. Embodied Insight delivers full auditability by enforcing the laws of physics—specifically time—on its causal reasoning.</p>
-            
-            <div class="timeline-box">
-                <div class="timeline-row">
-                    <div class="timeline-time">T = 0.0s</div>
-                    <div class="timeline-event event-ok">Friction Fault Begins (Joint 2)</div>
-                </div>
-                <div class="timeline-row">
-                    <div class="timeline-time">T = 0.2s</div>
-                    <div class="timeline-event event-warn">Current Spike Detected (CUSUM)</div>
-                </div>
-                <div class="timeline-row">
-                    <div class="timeline-time">T = 0.3s</div>
-                    <div class="timeline-event event-fail">Temperature Spike Detected</div>
-                </div>
-                <div style="margin-top: 1.5rem; border-top: 1px dashed var(--border); padding-top: 1.5rem; color: var(--text);">
-                    <strong style="color: var(--accent);">RCA Engine Evaluation:</strong><br>
-                    The engine knows thermal propagation takes 60-600 seconds. Because the temperature spike occurred 0.1 seconds after the friction fault, the system <strong>mathematically prunes</strong> the "Friction → Heat" causal chain. It correctly attributes the temperature spike to a separate sensor fault or electrical short, preventing a false diagnosis.
-                </div>
-            </div>
-            
-            <p>Every diagnosis is backed by a traceable failure chain (Fault → Mechanism → Observable → Task Failure) and a confidence score derived from physics, not guesswork.</p>
+        <div class="pipeline-step">
+          <div class="pipeline-tag">5. Proactive Output</div>
+          <div class="pipeline-desc">Ranked Root Causes (Before Task Failure)</div>
         </div>
-    </section>
-
-    <!-- Validation -->
-    <section id="validation">
-        <div class="container">
-            <h2>Validation & Datasets</h2>
-            <p>We are rigorously validating the Embodied Insight engine against real-world industrial datasets, focusing on early detection of known degradation patterns.</p>
-            
-            <div class="validation-grid">
-                <div class="validation-card">
-                    <h4>NIST UR5 Degradation</h4>
-                    <ul>
-                        <li>Cold-start thermal drift prediction</li>
-                        <li>Heavy payload current/torque correlation</li>
-                        <li>Multi-signal CUSUM early detection</li>
-                    </ul>
-                </div>
-                <div class="validation-card">
-                    <h4>KUKA Joint Wear</h4>
-                    <ul>
-                        <li>Gearbox friction progression tracking</li>
-                        <li>Encoder drift vs. mechanical backlash isolation</li>
-                        <li>Temporal delay validation (friction -> heat)</li>
-                    </ul>
-                </div>
-            </div>
-            <br>
-            <div class="validation-card">
-                <h4>The Path to Autonomous Maintenance</h4>
-                <p style="margin-bottom: 0;">While our V1 engine excels at early reactive root cause analysis using statistical (CUSUM) detectors, the underlying causal graph is designed for GNN integration. By replacing univariate detectors with Spatio-Temporal Graph Neural Networks, Embodied Insight will soon predict remaining useful life (RUL) and prescribe automated mitigations.</p>
-            </div>
+      </div>
+      
+      <!-- Right: Abstract UI Card -->
+      <div class="system-card">
+        <div class="card-top"><span>SYSTEM TRACE / JOINT_03</span><span>LIVE</span></div>
+        <div class="signal">
+          <svg viewBox="0 0 700 180" preserveAspectRatio="none" aria-label="Telemetry trace">
+            <path d="M0 140 L35 139 L60 137 L88 140 L115 138 L145 139 L175 137 L205 139 L230 138 L255 139 L280 136 L305 138 L330 136 L350 139 L370 137 L390 138 L405 133 L420 125 L430 95 L438 113 L447 76 L456 104 L466 57 L475 91 L487 44 L500 83 L515 35 L530 72 L550 29 L570 53 L590 24 L610 48 L635 19 L660 42 L700 30" fill="none" stroke="var(--accent)" stroke-width="2"/>
+            <line x1="0" y1="155" x2="700" y2="155" stroke="#202833"/>
+            <line x1="0" y1="52" x2="700" y2="52" stroke="#202833" stroke-dasharray="4 8"/>
+            <circle cx="430" cy="95" r="4" fill="var(--danger)"/>
+          </svg>
+          <div class="trace">
+            <div class="t">12:41:08</div><div class="v">Joint 03 current deviation ↑</div>
+            <div class="t">12:41:09</div><div class="v">Residual exceeds baseline</div>
+            <div class="t">12:41:10</div><div class="v alert">Candidate: friction / degradation</div>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- CTA -->
-    <section id="contact" class="cta-section">
-        <div class="container">
-            <div class="cta-box">
-                <h2>We are looking for Design Partners.</h2>
-                <p>Embodied Insight is in the early stages. We are actively looking for robotics engineers and fleet operators to help us validate our predictive causal models on real factory floor deployments.</p>
-                <a href="mailto:partners@embodiedinsight.ai?subject=Design Partner Inquiry" class="btn-primary">Request Early Access</a>
-            </div>
+<section id="platform">
+  <div class="container">
+    <div class="section-head">
+      <div class="kicker">The problem</div>
+      <h2>Robots produce data.<br>Engineers need explanations.</h2>
+      <p class="lead">Modern robots expose positions, velocities, currents, torques and temperatures. Most monitoring systems stop at thresholds and anomaly scores.</p>
+    </div>
+    <div class="problem">
+      <article class="tile"><div class="num">01 / DETECT</div><h3>Something changed.</h3><p>Statistical detectors can identify behavior that no longer matches the expected operating envelope.</p></article>
+      <article class="tile"><div class="num">02 / TRACE</div><h3>What caused it?</h3><p>Symptoms propagate across joints, actuators, mechanics, thermal behavior and task performance.</p></article>
+      <article class="tile"><div class="num">03 / DECIDE</div><h3>What should I inspect?</h3><p>Engineers need a ranked, physically plausible chain — not another dashboard full of independent alarms.</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- Reasoning Section with Background Analytics Graph -->
+<section id="reasoning">
+  <!-- Background SVG Graph -->
+  <svg class="bg-graph" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+    <path d="M0 400 C 150 450, 200 300, 350 350 S 500 500, 650 420 S 800 200, 950 300 S 1100 450, 1200 380" fill="none" stroke="var(--accent)" stroke-width="4"/>
+    <path d="M0 500 C 150 480, 250 550, 400 450 S 550 350, 700 480 S 850 600, 1000 450 S 1150 350, 1200 420" fill="none" stroke="var(--accent)" stroke-width="2" opacity="0.5"/>
+    <path d="M0 600 C 150 650, 300 580, 450 620 S 600 680, 750 550 S 900 500, 1050 620 S 1150 680, 1200 600" fill="none" stroke="var(--accent)" stroke-width="3" opacity="0.3"/>
+    
+    <!-- Scatter Dots -->
+    <circle cx="250" cy="350" r="6" fill="var(--accent)"/>
+    <circle cx="450" cy="450" r="4" fill="var(--accent)"/>
+    <circle cx="650" cy="420" r="8" fill="var(--accent)"/>
+    <circle cx="850" cy="250" r="5" fill="var(--accent)"/>
+    <circle cx="1050" cy="300" r="6" fill="var(--accent)"/>
+    
+    <!-- Grid lines mimicking the graph -->
+    <line x1="0" y1="100" x2="1200" y2="100" stroke="var(--accent)" stroke-width="1" opacity="0.1"/>
+    <line x1="0" y1="200" x2="1200" y2="200" stroke="var(--accent)" stroke-width="1" opacity="0.1"/>
+    <line x1="0" y1="300" x2="1200" y2="300" stroke="var(--accent)" stroke-width="1" opacity="0.1"/>
+    <line x1="0" y1="400" x2="1200" y2="400" stroke="var(--accent)" stroke-width="1" opacity="0.1"/>
+    <line x1="0" y1="500" x2="1200" y2="500" stroke="var(--accent)" stroke-width="1" opacity="0.1"/>
+  </svg>
+
+  <div class="container">
+    <div class="section-head">
+      <div class="kicker">The platform</div>
+      <h2>From telemetry to a causal story.</h2>
+      <p class="lead">The diagnostic pipeline combines behavior monitoring with the robot's physical structure and temporal constraints.</p>
+    </div>
+    <div class="pipeline">
+      <div class="step"><div class="n">01</div><h3>Observe</h3><p>Ingest robot telemetry and establish behavioral baselines.</p></div>
+      <div class="step"><div class="n">02</div><h3>Detect</h3><p>Find the onset and severity of abnormal behavior.</p></div>
+      <div class="step"><div class="n">03</div><h3>Reason</h3><p>Evaluate candidate mechanisms using physical constraints.</p></div>
+      <div class="step"><div class="n">04</div><h3>Trace</h3><p>Reconstruct temporally consistent propagation paths.</p></div>
+      <div class="step"><div class="n">05</div><h3>Explain</h3><p>Return ranked root causes with an auditable evidence chain.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="graph-layout">
+      <div class="explain-box">
+        <div class="kicker">Physics-aware reasoning</div>
+        <h3>Telemetry informs the graph. It doesn't invent the physics.</h3>
+        <p>
+          Candidate relationships come from the robot's structure and known mechanisms.
+          Observations update confidence in those relationships, while temporal and
+          physical constraints reject implausible explanations.
+        </p>
+        <div class="chain">
+          <div class="node fault"><span>Actuator degradation</span><small>candidate root</small></div>
+          <div class="arrow">↓ mechanism</div>
+          <div class="node"><span>friction ↑</span><small>physical effect</small></div>
+          <div class="arrow">↓ observable</div>
+          <div class="node"><span>current + torque residual</span><small>measured evidence</small></div>
+          <div class="arrow">↓ consequence</div>
+          <div class="node"><span>trajectory error</span><small>task impact</small></div>
         </div>
-    </section>
+      </div>
+      <div class="graph">
+        <div class="label">CAUSAL TRACE / JOINT 03</div>
+        <svg viewBox="0 0 600 330">
+          <defs><filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <path d="M105 80 C180 80 170 165 250 165 S340 75 425 75 S470 165 535 165" fill="none" stroke="#36414d" stroke-width="2"/>
+          <path d="M105 80 C180 80 170 165 250 165 S340 75 425 75 S470 165 535 165" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="7 7" filter="url(#glow)"/>
+          <g fill="#0c1017" stroke="#46515d">
+            <circle cx="105" cy="80" r="35"/><circle cx="250" cy="165" r="35"/><circle cx="425" cy="75" r="35"/><circle cx="535" cy="165" r="35"/>
+          </g>
+          <g fill="#f2f5f8" font-family="monospace" font-size="12" text-anchor="middle">
+            <text x="105" y="76">FRICTION</text><text x="105" y="91">↑</text>
+            <text x="250" y="161">CURRENT</text><text x="250" y="176">↑</text>
+            <text x="425" y="71">TORQUE</text><text x="425" y="86">RESIDUAL</text>
+            <text x="535" y="161">TCP</text><text x="535" y="176">ERROR</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            &copy; 2024 Embodied Insight. Built for engineers who need to know why.
-        </div>
-    </footer>
+<section id="architecture">
+  <div class="container">
+    <div class="section-head">
+      <div class="kicker">Built for real robots</div>
+      <h2>Start with the robot you already have.</h2>
+      <p class="lead">The system is designed around standard robot structure and telemetry rather than a single vendor or controller.</p>
+    </div>
+    <div class="arch">
+      <article class="tile"><div class="num">ROBOT MODEL</div><h3>Physical structure</h3><p>Use available kinematic and mechanical information to describe joints, actuators and their relationships.</p></article>
+      <article class="tile"><div class="num">TELEMETRY</div><h3>Operational signals</h3><p>Connect measured behavior such as position, velocity, current, torque and temperature.</p></article>
+      <article class="tile"><div class="num">DIAGNOSTICS</div><h3>Auditable outputs</h3><p>Every diagnosis can be represented as a chain of mechanism → observable → consequence.</p></article>
+      <article class="tile"><div class="num">EXTENSIBLE</div><h3>Beyond manipulators</h3><p>The same reasoning layer can grow toward broader physical-AI systems as the platform evolves.</p></article>
+    </div>
+  </div>
+</section>
 
+<section class="cta" id="contact">
+  <div class="container">
+    <div class="cta-box">
+      <div class="kicker">Early access</div>
+      <h2>Give your robot an explanation layer.</h2>
+      <p>We are working with robotics teams to validate physics-aware diagnostics on real systems and operational data.</p>
+      <a class="btn primary" href="mailto:partners@kinetiqlabs.ai?subject=Early%20Access">Request early access →</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="container footer-flex">
+    <span>© 2026 Kinetiq Labs</span>
+    <span>Understand the machine. Fix the cause.</span>
+  </div>
+</footer>
 </body>
 </html>
